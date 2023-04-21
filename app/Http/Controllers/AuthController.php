@@ -14,35 +14,57 @@ class AuthController extends Controller
 {
 
     /**
-     * Gestisce una richiesta di registrazione via api.
-     */
+        * CREATE USER
+        * @param Request $request
+        * @return User
+    */
     public function register(Request $request)
     {
-        // Valido i dati della request
-        $validator = Validator::make($request->all(), [
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:'.User::class],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
-        ]);
+        // trying to register USER
+        try{
+            // Validate USER DATA
+            $validateUser = Validator::make($request->all(), [
+                'name' => ['required', 'string', 'max:255'],
+                'surname' => ['required', 'string', 'max:255'],
+                'email' => ['required', 'string', 'email', 'max:255', 'unique:'.User::class],
+                'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            ]);
 
-        if($validator->fails()) {
-            return ['errors' => $validator->messages()];
+            if($validateUser->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'validation error',
+                    'errors' => $validateUser->messages()
+                ], 401);
+            }
+
+            //I USER IS VALID THEN CREATE BEARER TOKEN
+            $user = User::create([
+                'surname' => $request->surname,
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password)
+            ]);
+
+            return response()->json([
+                'user' => $user,
+                'status' => true,
+                'message' => 'User Created Successfully',
+                'access_token' => $user->createToken('auth_token')->plainTextToken,
+                'token_type' => 'Bearer',
+            ]);
+        }catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => $th->getMessage()
+            ], 500);
         }
 
-        // Se i dati della request passano la validazione allora creo l'utente e il token
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password)
-        ]);
-        $token = $user->createToken('auth_token')->plainTextToken;
-
-        return response()->json([
-            'user' => $user,
-            'access_token' => $token,
-            'token_type' => 'Bearer',
-        ]);
     }
+
+
+
+
 
     /**
      * Gestisce una richiesta di login via api.
@@ -63,5 +85,4 @@ class AuthController extends Controller
             'token_type' => 'Bearer',
         ]);
     }
-
 }
