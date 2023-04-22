@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rules;
@@ -24,6 +24,7 @@ class AuthController extends Controller
         try{
             // Validate USER DATA
             $validateUser = Validator::make($request->all(), [
+                'username' => ['required', 'string', 'max:255'],
                 'name' => ['required', 'string', 'max:255'],
                 'surname' => ['required', 'string', 'max:255'],
                 'email' => ['required', 'string', 'email', 'max:255', 'unique:'.User::class],
@@ -40,6 +41,7 @@ class AuthController extends Controller
 
             //I USER IS VALID THEN CREATE BEARER TOKEN
             $user = User::create([
+                'username' => $request->username,
                 'surname' => $request->surname,
                 'name' => $request->name,
                 'email' => $request->email,
@@ -53,6 +55,8 @@ class AuthController extends Controller
                 'access_token' => $user->createToken('auth_token')->plainTextToken,
                 'token_type' => 'Bearer',
             ]);
+
+
         }catch (\Throwable $th) {
             return response()->json([
                 'status' => false,
@@ -67,21 +71,26 @@ class AuthController extends Controller
 
 
     /**
-     * Gestisce una richiesta di login via api.
+        * LOGIN USER
+        * @param Request $request
      */
     public function login(Request $request)
     {
+
         if (!Auth::attempt($request->only('email', 'password'))) {
             return response()->json([
-                'status' => 'error',
+                'status' => false,
                 'message' => 'Invalid login details'
             ], 401);
         }
+
+        // RETURN THE API TOKEN IF USER LOGED IN
         $user = User::where('email', $request['email'])->firstOrFail();
-        $token = $user->createToken('auth_token')->plainTextToken;
         return response()->json([
+            'status' => true,
+            'message' => 'User logged in Successfully',
             'user' => $user,
-            'access_token' => $token,
+            'access_token' => $user->createToken('auth_token')->plainTextToken,
             'token_type' => 'Bearer',
         ]);
     }
