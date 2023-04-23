@@ -21,21 +21,27 @@ class ExercisesController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $ex = new Exercise;
+        $ex -> name = $request -> input('name');
+        $ex -> save();
+        return response()->json([
+            'status' => true,
+            'message' => 'exercise created',
+        ]);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Exercises $exercises)
+    public function show(Exercise $exercise, $id)
     {
-        //
+        return $exercise->findorfail($id);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Exercises $exercises)
+    public function update(Request $request, Exercise $exercise)
     {
         //
     }
@@ -43,8 +49,10 @@ class ExercisesController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Exercises $exercises)
+    public function destroy(Exercise $exercise, $id )
     {
-        //
+        $id= Exercise::findOrFail($id);
+        $id -> delete();
+        return "Exercise DELETED";
     }
 }

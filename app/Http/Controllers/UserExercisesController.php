@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\UserExercise;
+use App\Models\Exercise;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\UserExercise;
 
 class UserExercisesController extends Controller
 {
@@ -13,7 +14,8 @@ class UserExercisesController extends Controller
      */
     public function index()
     {
-        return UserExercise::all();
+        $ex = UserExercise::all();
+        return response()->json($ex);
     }
 
     /**
@@ -21,30 +23,51 @@ class UserExercisesController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try{
+            $ex = new UserExercise;
+            $ex->user_id = Auth::id();
+            $ex->exercise_id = $request->exercise_id;
+            $ex-> data = json_encode($request->only('data'));
+            $ex->save();
+            return "EXERCISE SAVED";
+        }
+        catch (\Throwable $th) {
+            return response()->json($th, 405);
+        }
+
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(UserExercises $userExercises)
+    public function show(UserExercise $userExercise, $id)
     {
-        //
+            return $userExercise->findorfail($id);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, UserExercises $userExercises)
+    public function update(Request $request, UserExercise $userExercise, $id)
     {
-        //
+        try{
+            $ex = UserExercise::findOrFail($id);
+            $ex->user_id = Auth::id();
+            $ex->exercise_id = $request->exercise_id;
+            $ex-> data = $request->input('data');
+            $ex->update();
+        }catch (\Throwable $th) {
+            return response()->json($th, 405);
+        }
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(UserExercises $userExercises)
+    public function destroy(UserExercise $userExercise)
     {
-        //
+        $ex = $userExercise->findorfail($id);
+        $ex -> delete();
+        return "Was deleted succesfully";
     }
 }

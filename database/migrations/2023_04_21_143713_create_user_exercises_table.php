@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreign('user_id')->references('id')->on('users');
             $table->unsignedBigInteger('exercise_id');
             $table->foreign('exercise_id')->references('id')->on('exercises');
-            $table->json('data');
+            $table->text('data')->nullable();
             $table->timestamps();
         });
     }

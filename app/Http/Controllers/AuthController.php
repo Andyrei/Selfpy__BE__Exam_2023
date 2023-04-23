@@ -14,32 +14,48 @@ class AuthController extends Controller
 {
 
     /**
-        * CREATE USER
+        * REGISTER/CREATE USER
         * @param Request $request
-        * @return User
+        * @return USER =>
+        *    IF ERROR {
+        *        DATA: {
+        *            satus: false,
+        *            message: Details are not valid
+        *            errors: <All the errors and their RULES>
+        *        }
+        *    }
+        *    ELSE {
+        *        DATA: {
+        *            status: true,
+        *            message: Registered successfully,
+        *            user: < DATA OF THE USER FROM JUST CREATED >,
+        *            access_token: < ACCESS TOKEN CREATED >,
+        *            token_type: < TYPE OF TOKEN: Bearer >
+        *        }
+        *    }
     */
     public function register(Request $request)
     {
-        // trying to register USER
-        try{
-            // Validate USER DATA
-            $validateUser = Validator::make($request->all(), [
-                'username' => ['required', 'string', 'max:255'],
-                'name' => ['required', 'string', 'max:255'],
+
+            // Validate USER DATA and giving error rules
+            $validator = Validator::make($request->all(), [
+                'username' => ['required', 'string', 'max:255','unique:'.User::class],
                 'surname' => ['required', 'string', 'max:255'],
+                'name' => ['required', 'string', 'max:255'],
                 'email' => ['required', 'string', 'email', 'max:255', 'unique:'.User::class],
                 'password' => ['required', 'confirmed', Rules\Password::defaults()],
             ]);
 
-            if($validateUser->fails()) {
-                return response()->json([
+            // IF FAILS return ERROR -> DATA
+            if($validator->fails()) {
+                return [
                     'status' => false,
-                    'message' => 'validation error',
-                    'errors' => $validateUser->messages()
-                ], 401);
+                    'message' => 'Details are not valid',
+                    'errors' => $validator->messages()
+                ];
             }
 
-            //I USER IS VALID THEN CREATE BEARER TOKEN
+            // ELSE CREATE USER TOKEN
             $user = User::create([
                 'username' => $request->username,
                 'surname' => $request->surname,
@@ -49,22 +65,13 @@ class AuthController extends Controller
             ]);
 
             return response()->json([
-                'user' => $user,
                 'status' => true,
-                'message' => 'User Created Successfully',
+                'message' => 'Registered successfully',
+                'user' => $user,
                 'access_token' => $user->createToken('auth_token')->plainTextToken,
                 'token_type' => 'Bearer',
             ]);
-
-
-        }catch (\Throwable $th) {
-            return response()->json([
-                'status' => false,
-                'message' => $th->getMessage()
-            ], 500);
         }
-
-    }
 
 
 
@@ -73,7 +80,23 @@ class AuthController extends Controller
     /**
         * LOGIN USER
         * @param Request $request
-     */
+        * @return USER =>
+        *    IF ERROR {
+        *        DATA: {
+        *            satus: false,
+        *            message: Invalid login details
+        *        }
+        *    }
+        *    ELSE {
+        *        DATA: {
+        *            status: true,
+        *            message: User logged in Successfully,
+        *            user: <DATA OF THE USER FROM DB>,
+        *            access_token: <ACCESS TOKEN CREATED>,
+        *            token_type: <TYPE OF TOKEN: Bearer>
+        *        }
+        *    }
+    */
     public function login(Request $request)
     {
 
@@ -86,6 +109,7 @@ class AuthController extends Controller
 
         // RETURN THE API TOKEN IF USER LOGED IN
         $user = User::where('email', $request['email'])->firstOrFail();
+
         return response()->json([
             'status' => true,
             'message' => 'User logged in Successfully',

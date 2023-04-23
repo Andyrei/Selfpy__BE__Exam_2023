@@ -20,7 +20,7 @@ class UserSeed extends Seeder
             'surname'=>'An',
             'name' => 'Dy',
             'email' => 'an@dy.com',
-            'password' => Hash::make('12345'),
+            'password' => Hash::make('an@dy123'),
         ]);
     }
 }

@@ -31,6 +31,28 @@ Route::post('/auth/login', [AuthController::class, 'login']);
 
 
 
+Route::controller(ExercisesController::class)->group(function() {
 
-Route::get('/exercises', [ExercisesController::class, 'index'] );
-Route::get('/userexercises',[UserExercisesController::class, 'index']);
+    // SHOW ALL
+    Route::get('/exercises',  'index' );
+
+    // CREATE EXERCISE
+    Route::post("/exercises/create", 'store');
+
+    // GET BY ID
+    Route::get('/exercises/{id}', 'show');
+
+    // DESTROY
+    Route::delete('/exercises/destroy/{id}', 'destroy');
+});
+
+Route::controller(UserExercisesController::class)->group(function() {
+
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::get('/userexercises','index');
+        Route::get('/userexercises/{id}', 'show');
+        Route::post('/userexercises/create', 'store');
+        Route::patch('/userexercises/update/{id}', 'update');
+        Route::delete('/userexercises/delete/{id}', 'destroy');
+    });
+});
