@@ -16,7 +16,7 @@ class UserExerciseSeeder extends Seeder
         DB::table('user_exercises')->insert([
             'user_id'=>'1',
             'exercise_id' => '1',
-            'data' => '{"adversity": {"info": "Adversity is the negative event that triggered your thoughts","content": ""},"belief": {"info":"Beliefs are the thoughts that you had before/after the circumstance","content": ""}"consequence":{"info": "Consequences are feelings and watnut that you had after the event","content": ""}}'
+            'data' => '{"adversity":"Some event inserted here","belief":"Some belief here","feellings":"UH.... Feelings"}',
         ]);
     }
 }

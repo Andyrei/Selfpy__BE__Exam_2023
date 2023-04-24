@@ -15,12 +15,28 @@ class ExerciseSeeder extends Seeder
     {
         DB::table('exercises')->insert([
             'name'=>'abc_schema',
+            'data' => '[
+                {
+                    "label":"adversity",
+                    "info": "Adversity is the negative event that triggered your thoughts"
+                },
+                {
+                    "label":"belief",
+                    "info":"Beliefs are the thoughts that you had before/after the circumstance"
+                },
+                {
+                    "label":"consequence",
+                    "info": "Consequences are feelings and watnut that you had after the event"
+                }
+            ]',
         ]);
         DB::table('exercises')->insert([
             'name'=>'mood_track',
+            'data'=>'[{"MoodName": ""},{"MoodScore":""},{"Notes":""}]'
         ]);
         DB::table('exercises')->insert([
             'name'=>'greatfulness',
+            'data'=> '[{"title":"Greatefulness"}]'
         ]);
     }
 }
