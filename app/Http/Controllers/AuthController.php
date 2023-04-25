@@ -71,7 +71,7 @@ class AuthController extends Controller
                 'access_token' => $user->createToken('auth_token')->plainTextToken,
                 'token_type' => 'Bearer',
             ]);
-        }
+    }
 
 
 
@@ -118,4 +118,38 @@ class AuthController extends Controller
             'token_type' => 'Bearer',
         ]);
     }
+
+    public function update(Request $request, $id){
+        {
+
+            // Validate USER DATA and giving error rules
+            $validator = Validator::make($request->all(), [
+                'surname' => ['required', 'string', 'max:255'],
+                'name' => ['required', 'string', 'max:255'],
+            ]);
+
+            // IF FAILS return ERROR -> DATA
+            if($validator->fails()) {
+                return [
+                    'status' => false,
+                    'message' => 'Details are not valid',
+                    'errors' => $validator->messages()
+                ];
+            }
+
+            // ELSE CREATE USER TOKEN
+            $user = User::findOrFail($id);
+            $user->username = $request->username;
+            $user-> surname = $request->surname;
+            $user-> name = $request->name;
+            $user-> description = $request->description;
+            $user->save();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'UPDATED',
+            ]);
+        }
+    }
+
 }
