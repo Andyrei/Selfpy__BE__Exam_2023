@@ -29,7 +29,10 @@ class UserExercisesController extends Controller
             $ex->exercise_id = $request->exercise_id;
             $ex-> data = json_encode($request->only('data'));
             $ex->save();
-            return "EXERCISE SAVED";
+            return response()->json([
+                'status' => true,
+                'message' => 'Exercise stored',
+            ]);
         }
         catch (\Throwable $th) {
             return response()->json($th, 405);
@@ -56,6 +59,7 @@ class UserExercisesController extends Controller
             $ex->exercise_id = $request->exercise_id;
             $ex-> data = $request->input('data');
             $ex->update();
+
         }catch (\Throwable $th) {
             return response()->json($th, 405);
         }
