@@ -14,7 +14,7 @@ class UserExercisesController extends Controller
      */
     public function index()
     {
-        $ex = UserExercise::all();
+        $ex = Auth::user()->exercises;
         return response()->json($ex);
     }
 
@@ -23,21 +23,27 @@ class UserExercisesController extends Controller
      */
     public function store(Request $request)
     {
-        try{
-            $ex = new UserExercise;
-            $ex->user_id = Auth::id();
-            $ex->exercise_id = $request->exercise_id;
-            $ex-> data = json_encode($request->only('data'));
-            $ex->save();
-            return response()->json([
+            $data = $request->input('data');
+            $ex = Auth::user();
+            $ex->exercises()->attach(
+                $request->exercise_id,
+                ['data'=> $data]
+            );
+
+            if($data && $request->exercise_id) {
+                return response()->json([
+                'data' => $data,
                 'status' => true,
                 'message' => 'Exercise stored',
-            ]);
-        }
-        catch (\Throwable $th) {
-            return response()->json($th, 405);
-        }
-
+                ]);
+            }else{
+                return response()->json([
+                    "message" => "something is missing",
+                    "user"=> Auth::user(),
+                    "exercise_id"=> $request->exercise_id,
+                    'data'=> $request->data
+                ], 400);
+            }
     }
 
     /**

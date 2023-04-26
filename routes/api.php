@@ -45,13 +45,10 @@ Route::controller(ExercisesController::class)->group(function() {
     Route::delete('/exercises/destroy/{id}', 'destroy');
 });
 
-Route::controller(UserExercisesController::class)->group(function() {
-
-    Route::middleware('auth:sanctum')->group(function () {
+Route::controller(UserExercisesController::class)->middleware('auth:sanctum')->group(function() {
         Route::get('/userexercises','index');
         Route::get('/userexercises/{id}', 'show');
-        Route::post('/userexercises/create', 'store');
+        Route::post('/userexercises', 'store');
         Route::patch('/userexercises/update/{id}', 'update');
         Route::delete('/userexercises/delete/{id}', 'destroy');
-    });
 });

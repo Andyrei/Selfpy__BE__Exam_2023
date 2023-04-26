@@ -9,7 +9,8 @@ class Exercise extends Model
 {
     use HasFactory;
 
-    public function userExercises () {
-        return $this -> hasMany(UserExercise::class);
+    public function users () {
+        return $this -> belongsToMany(User::class)
+                ->withPivot(['data']);
     }
 }

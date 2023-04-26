@@ -139,7 +139,7 @@ class AuthController extends Controller
 
             // ELSE CREATE USER TOKEN
             $user = User::findOrFail($id);
-            $user->username = $request->username;
+            $user-> username = $request->username;
             $user-> surname = $request->surname;
             $user-> name = $request->name;
             $user-> description = $request->description;
