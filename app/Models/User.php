@@ -47,6 +47,6 @@ class User extends Authenticatable
 
     public function exercises () {
         return $this -> belongsToMany(Exercise::class)
-            ->withPivot(['data']);
+            ->withPivot(['data'])->withTimestamps();
     }
 }

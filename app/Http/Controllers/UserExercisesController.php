@@ -27,7 +27,9 @@ class UserExercisesController extends Controller
             $ex = Auth::user();
             $ex->exercises()->attach(
                 $request->exercise_id,
-                ['data'=> $data]
+                [
+                    'data'=> $data
+                ]
             );
 
             if($data && $request->exercise_id) {
