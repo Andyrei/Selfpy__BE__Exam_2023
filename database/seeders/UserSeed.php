@@ -16,10 +16,11 @@ class UserSeed extends Seeder
     public function run(): void
     {
         DB::table('users')->insert([
-            'username'=>'user_Andy',
-            'surname'=>'An',
-            'name' => 'Dy',
+            'username'=>'an_dy',
+            'surname'=>'Radoaca',
+            'name' => 'Andrei',
             'email' => 'an@dy.com',
+            'description' => 'I am decribing myself in here belive me',
             'password' => Hash::make('an@dy123'),
         ]);
     }

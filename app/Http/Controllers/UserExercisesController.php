@@ -61,7 +61,7 @@ class UserExercisesController extends Controller
      */
     public function update(Request $request, UserExercise $userExercise, $id)
     {
-        try{
+        /* try{
             $ex = UserExercise::findOrFail($id);
             $ex->user_id = Auth::id();
             $ex->exercise_id = $request->exercise_id;
@@ -70,16 +70,15 @@ class UserExercisesController extends Controller
 
         }catch (\Throwable $th) {
             return response()->json($th, 405);
-        }
+        } */
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(UserExercise $userExercise)
+    public function destroy($id)
     {
-        $ex = $userExercise->findorfail($id);
-        $ex -> delete();
+        $ex = Auth::user()->exercises()->detach($id);
         return "Was deleted succesfully";
     }
 }
